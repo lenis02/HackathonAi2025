@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="src/script.js"></script>
+    <script src="src/app.js"></script>
+  </head>
+
+  <body>
+    <!-- 내비게이션 바 -->
+    <div class="navbar">
+        <div class="logo">Check on Solar Power</div>
+        <div class="contact">문의하기</div>
+    </div>
+
+    <div class="home">
+      <div class="div">
+        <div class="rectangle"></div>
+        <img src="solar-panel.png" alt="Solar Panel" class="solar-image">
+        <div class="check-on-solar-power">Check on<br />Solar Power</div>
+        <div class="text-wrapper">태양광 발전량을 예측해 보세요!</div>
+      </div>
+
+<!-- 지역 선택 -->
+    <div class="regionSelect">
+        <h2>지역 선택</h2>
+        <div class="input-container">
+        <label for="city">도시</label>
+        <select id="city" onchange="updateDistricts()">
+            <option value="">선택</option>
+            <option value="광주광역시">광주광역시</option>
+            <option value="서울특별시">서울특별시</option>
+        </select>
+
+        <label for="district">군/구</label>
+        <select id="district" onchange="updateDongs()">
+            <option value="">선택</option>
+        </select>
+
+        <label for="dong">동</label>
+        <select id="dong" onchange="updateZipcode()">
+            <option value="">선택</option>
+        </select>
+
+        <label for="zipcode">우편번호</label>
+        <input type="text" id="zipcode" readonly placeholder="자동 입력">
+        </div>
+        <button id="saveRegion" onclick="saveRegion()">저장</button>
+    </div>
+</div>  
+</div>
+
+  </body>
+</html>

@@ -1,0 +1,190 @@
+/* 기본 리셋 */
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Noto Sans', sans-serif;
+} */
+
+body, html {
+  width: 100%;
+  height: 100%;
+}
+
+/* 내비게이션 바 */
+.navbar {
+  width: 100%;
+  height: 70px;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.navbar .logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #C96E00;
+  letter-spacing: -2px;
+}
+
+.navbar .contact {
+  font-size: 20px;
+  font-weight: 300;
+  color: #FF9719;
+  cursor: pointer;
+  letter-spacing: -2px;
+}
+
+/* 홈 영역 */
+.home {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffc783;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 120px; /* navbar + 텍스트 여유 공간 */
+}
+
+.solar-image {
+  width: 70px;             /* 이미지 크기 조절 */
+  height: auto;
+}
+
+.div {
+  display: flex;             /* 가로 정렬 */
+  align-items: center;       /* 세로 중앙 맞춤 */
+  justify-content: center;   /* 화면 중앙 정렬 */
+  gap: 80px;                 /* 텍스트 사이 간격 */
+  flex-wrap: wrap;           /* 작은 화면에서 줄 바꿈 */
+  flex-direction: row;       /* 가로 방향 */
+  text-align: center;        /* 텍스트 중앙 정렬 */
+  margin-top: 200px;
+  margin-bottom: 200px;      /* 지역 선택 창과 간격 */
+}
+
+.check-on-solar-power {
+  font-weight: 800;
+  font-size: 70px;
+  color: #ffffff;
+  line-height: 1.1;
+  flex-shrink: 0; /* 축소 방지 */
+  
+  text-align: center;
+  margin-bottom: 100px; /* 지역 선택 창과 간격 */
+  letter-spacing: -5px;
+}
+
+.text-wrapper {
+  font-weight: 400;
+  font-size: 45px;
+  color: #ffffff;
+  line-height: 1.2;
+  flex-shrink: 0;
+  margin-bottom: 100px;
+
+  letter-spacing: -5px;
+
+}
+
+/* 지역 선택 창 */
+.regionSelect {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background-color: #ffffff; /* 카드 배경 */
+  border-radius: 6px;
+  border: 1px solid #e1dccb;
+  box-shadow: 0px 4px 6px #00000017;
+  width: 320px;
+  margin-bottom: 50px; /* 카드와 아래 여백 */
+}
+
+/* 지역 선택 제목 */
+.regionSelect h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  text-align: center;
+}
+
+/* 입력창 컨테이너 */
+.regionSelect .input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.regionSelect label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* 입력창/드롭다운 */
+.regionSelect select,
+.regionSelect input {
+  padding: 8px 12px;
+  border: 1px solid #e1dccb;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  background-color: #ffffff; /* 입력창 흰색 */
+  appearance: none;
+}
+
+.regionSelect select:focus,
+.regionSelect input:focus {
+  border-color: #faead6;
+  box-shadow: 0 0 0 1px #faead6;
+}
+
+/* 드롭다운 화살표 */
+.regionSelect select {
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0L5 6L10 0H0Z' fill='%23334355'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px 6px;
+}
+
+/* 저장 버튼 */
+.regionSelect button {
+  margin-top: 12px;
+  padding: 10px 16px;
+  background-color: #C96E00;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.regionSelect button:hover {
+  background-color: #B65B00;
+}
+
+/* 반응형 - 화면 좁아지면 세로로 배치 */
+@media (max-width: 1000px) {
+  .div {
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+  }
+  .check-on-solar-power,
+  .text-wrapper {
+    text-align: center;
+  }
+}
