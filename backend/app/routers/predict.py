@@ -1,14 +1,13 @@
-import os, joblib
-import numpy as np
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..db.database import SessionLocal
-from ..models.prediction import Prediction
-from ..schemas.predict import PredictionRequest, PredictionResponse
+from datetime import datetime, timedelta
+from backend.app.db.database import SessionLocal
+from backend.app.models.prediction import FuturePrediction
+import sys, os
 
 router = APIRouter()
 
-# DB 세션
+# DB 세션 의존성 주입
 def get_db():
     db = SessionLocal()
     try:
@@ -16,31 +15,33 @@ def get_db():
     finally:
         db.close()
 
-# ✅ ML 모델 로드 (ml 폴더에서)
-model_path = os.path.join(os.path.dirname(__file__), "..", "ml", "ac_power_model.pkl")
-model = joblib.load(model_path)
+@router.get("/get_predictions")
+def get_predictions(plant_id: str, date: str, db: Session = Depends(get_db)):
+    try:
+        target_date = datetime.strptime(date, '%Y-%m-%d').date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)")
 
-@router.post("/predict", response_model=PredictionResponse)
-def predict(request: PredictionRequest, db: Session = Depends(get_db)):
-    # 입력 feature → numpy 배열 변환
-    features = np.array([[
-        request.features.AMBIENT_TEMPERATURE,
-        request.features.MODULE_TEMPERATURE,
-        request.features.IRRADIATION
-    ]])
+    # 1. 요청된 날짜의 발전량 조회
+    target_day_data = db.query(FuturePrediction).filter(
+        FuturePrediction.plant_id == plant_id,
+        FuturePrediction.date == str(target_date)
+    ).first()
+    predicted_yield = target_day_data.daily_yield if target_day_data else 0
 
-    # 모델 예측
-    ac_power = float(model.predict(features)[0])
+    # 2. 그래프용 8일치 데이터 조회
+    start_date = target_date - timedelta(days=7)
+    chart_data_query = db.query(FuturePrediction).filter(
+        FuturePrediction.plant_id == plant_id,
+        FuturePrediction.date >= str(start_date),
+        FuturePrediction.date <= str(target_date)
+    ).order_by(FuturePrediction.date).all()
+    
+    chart_data = [{"date": r.date, "yield": r.daily_yield} for r in chart_data_query]
 
-    # DB 저장
-    record = Prediction(
-        plant_id=request.plant_id,
-        source_key=request.source_key,
-        ts=request.ts,
-        ac_power=ac_power
-    )
-    db.add(record)
-    db.commit()
-    db.refresh(record)
-
-    return {"status": "ok"}
+    return {
+        "plant_id": plant_id,
+        "requested_date": str(target_date),
+        "predicted_yield_for_requested_date": predicted_yield,
+        "chart_data": chart_data
+    }

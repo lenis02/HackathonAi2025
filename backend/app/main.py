@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from .routers import predict, result
-from .db.database import Base, engine
-from .models import prediction  # prediction.py에서 Prediction 클래스 import
+from backend.app.routers import predict, result
+from backend.app.db.database import Base, engine
+from backend.app.models import prediction
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import os

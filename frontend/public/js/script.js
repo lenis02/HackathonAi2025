@@ -1,205 +1,232 @@
+// // ================================================================
+// // ✨ 최종 수정된 script.js (2025-08-21)
+// // ================================================================
+
+// document.addEventListener("DOMContentLoaded", function () {
+//   // 현재 페이지가 main.html인지 확인
+//   if (document.getElementById("goResultBtn")) {
+//     // main.html의 '결과 확인' 버튼에 이벤트 연결
+//     document
+//       .getElementById("goResultBtn")
+//       .addEventListener("click", goToResultPage);
+//   }
+
+//   // 현재 페이지가 result.html인지 확인
+//   if (document.getElementById("resultChart")) {
+//     // 결과 페이지 로직 초기화
+//     initializeResultPage();
+//   }
+// });
+
+// const plantMapping = {
+//   "광주광역시 북구 용봉동": "4135001",
+//   "전라북도 남원시 주천면 용담리": "4236001",
+// };
+
+// // --- main.html 용 함수 ---
+
+// function goToResultPage() {
+//   const region = document.getElementById("region")?.value;
+//   const selectedPlantId = plantMapping[region];
+
+//   if (!selectedPlantId) {
+//     alert("지역을 먼저 선택하세요!");
+//     return;
+//   }
+
+//   // 선택한 발전소 ID를 브라우저 임시 저장소에 저장
+//   sessionStorage.setItem("selectedPlantId", selectedPlantId);
+
+//   // 결과 페이지로 이동
+//   window.location.href = "/result";
+// }
+
+// // --- result.html 용 함수 ---
+
+// function initializeResultPage() {
+//   const plantId = sessionStorage.getItem("selectedPlantId");
+//   if (!plantId) {
+//     alert("선택된 지역 정보가 없습니다. 메인 페이지로 돌아갑니다.");
+//     window.location.href = "/";
+//     return;
+//   }
+
+//   // 날짜 선택(flatpickr) 라이브러리 설정
+//   const datePicker = flatpickr("#resultDateRange", {
+//     dateFormat: "Y-m-d",
+//     defaultDate: "today",
+//     // ✅ 날짜가 변경될 때마다 차트를 다시 그리는 함수를 호출
+//     onChange: function (selectedDates, dateStr, instance) {
+//       fetchAndDrawChart(plantId, dateStr);
+//     },
+//   });
+
+//   // 페이지 최초 로드 시, 오늘 날짜로 차트 그리기
+//   fetchAndDrawChart(plantId, new Date().toISOString().split("T")[0]);
+// }
+
+// async function fetchAndDrawChart(plantId, date) {
+//   const url = `/get_predictions?plant_id=${plantId}&date=${date}`;
+//   console.log("API 요청:", url);
+
+//   try {
+//     const response = await fetch(url);
+//     if (!response.ok) throw new Error("데이터 로딩 실패");
+
+//     const data = await response.json();
+
+//     // 결과 데이터 표시
+//     document.getElementById("resultDate").innerText = data.requested_date;
+//     document.getElementById("totalYield").innerText =
+//       data.predicted_yield_for_requested_date.toFixed(2) + " kWh";
+
+//     // 기존 차트가 있으면 파괴하고 새로 그림 (업데이트를 위해)
+//     if (window.myChart) {
+//       window.myChart.destroy();
+//     }
+
+//     const ctx = document.getElementById("resultChart").getContext("2d");
+//     window.myChart = new Chart(ctx, {
+//       type: "line",
+//       data: {
+//         labels: data.chart_data.map((r) => r.date),
+//         datasets: [
+//           {
+//             label: "일별 예측 발전량 (Daily Yield)",
+//             data: data.chart_data.map((r) => r.yield),
+//             borderColor: "#4A90E2",
+//             backgroundColor: "rgba(74, 144, 226, 0.1)",
+//             fill: true,
+//             tension: 0.3,
+//           },
+//         ],
+//       },
+//     });
+//   } catch (err) {
+//     console.error("차트 업데이트 실패:", err);
+//     alert("결과를 불러오는 중 오류가 발생했습니다.");
+//   }
+// }
+
+// ================================================================
+// ✨ 최종 개선된 script.js (2025-08-21)
+// ================================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+  // 현재 페이지가 main.html일 경우, 버튼 이벤트 연결
+  const goResultBtn = document.getElementById("goResultBtn");
+  if (goResultBtn) {
+    goResultBtn.addEventListener("click", goToResultPage);
+  }
+
+  // 현재 페이지가 result.html일 경우, 결과 페이지 초기화 함수 실행
+  const resultChart = document.getElementById("resultChart");
+  if (resultChart) {
+    initializeResultPage();
+  }
+});
+
 const plantMapping = {
   "광주광역시 북구 용봉동": "4135001",
   "전라북도 남원시 주천면 용담리": "4236001",
 };
 
-let selectedPlantId = null;
+// --- main.html 용 함수 ---
 
-// 페이지가 로드된 후 실행
-document.addEventListener("DOMContentLoaded", function () {
-  flatpickr("#dateRange", {
-    dateFormat: "Y-m-d",
-    mode: "single", // <- 여기서 하루만 선택 가능
-    defaultDate: new Date(),
-  });
-});
-
-// 지역 저장
-function saveRegion() {
+function goToResultPage() {
   const region = document.getElementById("region")?.value;
-  if (!region || !plantMapping[region]) {
-    alert("지역을 선택하세요!");
-    return;
-  } else {
-    alert("지역이 입력되었습니다");
-  }
-  selectedPlantId = plantMapping[region];
+  const selectedPlantId = plantMapping[region];
 
-  //   // 백엔드로 전송
-  //   fetch("/save-region", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ city, district, dong, zipcode }),
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => alert("지역 저장 완료: " + JSON.stringify(data)))
-  //     .catch((err) => console.error(err));
-}
-
-// 기간 저장 (하루만 선택 가능)
-// function saveDate() {
-//   const dateRange = document.getElementById("dateRange").value;
-//   if (!dateRange) {
-//     alert("날짜를 선택해 주세요!");
-//     return;
-//   }
-
-//   console.log("선택한 기간:", dateRange);
-
-//   // 시작일, 종료일 분리
-//   const dates = dateRange.split(" to ");
-//   if (dates.length !== 2) {
-//     alert("기간을 올바르게 선택해 주세요!");
-//     return;
-//   }
-
-//   const start = new Date(dates[0]);
-//   const end = new Date(dates[1]);
-
-//   // 날짜 차이 (일 단위)
-//   const diffDays = (end - start) / (1000 * 60 * 60 * 24);
-
-//   if (diffDays !== 0) {
-//     // 하루만 허용
-//     alert("기간은 하루만 선택 가능합니다!");
-//     return;
-//   }
-
-//   console.log("선택한 날짜:", start);
-
-//   // 예시: 백엔드로 보내는 fetch
-//   fetch("/save-date", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({ date: start.toISOString().split("T")[0] }),
-//   })
-//     .then((res) => res.json())
-//     .then((data) => alert("저장 완료: " + JSON.stringify(data)))
-//     .catch((err) => console.error(err));
-// }
-
-async function goResult() {
   if (!selectedPlantId) {
     alert("지역을 먼저 선택하세요!");
     return;
   }
 
-  const loading = document.getElementById("loading");
-  if (loading) loading.style.display = "block";
+  // 선택한 발전소 ID를 브라우저 임시 저장소에 저장
+  sessionStorage.setItem("selectedPlantId", selectedPlantId);
+  // 결과 페이지로 이동
+  window.location.href = "/result";
+}
 
-  const requestBody = {
-    plant_id: selectedPlantId,
-    source_key: "TEMP_KEY",
-    ts: new Date().toISOString(),
-    features: {
-      AMBIENT_TEMPERATURE: 25.0,
-      MODULE_TEMPERATURE: 35.0,
-      IRRADIATION: 500.0,
+// --- result.html 용 함수 ---
+
+function initializeResultPage() {
+  // ✅ 개선점: 차트 인스턴스를 함수 내 지역 변수로 관리하여 안정성 확보
+  let chartInstance = null;
+
+  const plantId = sessionStorage.getItem("selectedPlantId");
+  if (!plantId) {
+    alert("선택된 지역 정보가 없습니다. 메인 페이지로 돌아갑니다.");
+    window.location.href = "/";
+    return;
+  }
+
+  // 날짜 선택(flatpickr) 라이브러리 설정
+  const datePicker = flatpickr("#resultDateRange", {
+    defaultDate: "today", // 기본 선택 날짜는 오늘
+
+    // ✅ 개선점: 달력이 처음 준비되었을 때 '한 번만' 실행되어 최초 차트를 그림
+    onReady: function (selectedDates, dateStr, instance) {
+      // flatpickr의 input 요소에서 직접 날짜 값을 가져와서 호출
+      fetchAndDrawChart(instance.input.value);
     },
-  };
 
-  try {
-    await fetch("/predict", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    });
+    // ✅ 개선점: 사용자가 날짜를 선택하고 달력을 '닫았을 때' 실행 (불필요한 호출 방지)
+    onClose: function (selectedDates, dateStr, instance) {
+      fetchAndDrawChart(dateStr);
+    },
+  });
 
-    // 예측 완료 → 결과 페이지로 이동
-    window.location.href = "/result";
-  } catch (err) {
-    console.error("예측 요청 실패:", err);
-  }
-}
+  /**
+   * API를 호출하고 차트를 그리는 핵심 함수
+   * @param {string} date - 'YYYY-MM-DD' 형식의 날짜 문자열
+   */
+  async function fetchAndDrawChart(date) {
+    if (!date) return; // 날짜가 없으면 실행 중단
 
-// async function goResult() {
-//   const payload = {
-//     plant_id: "test_plant", // 실제 입력값으로 교체 가능
-//     source_key: "test_source",
-//     ts: new Date().toISOString(),
-//     features: {
-//       AMBIENT_TEMPERATURE: 28.5,
-//       MODULE_TEMPERATURE: 42.7,
-//       IRRADIATION: 600.2,
-//     },
-//   };
+    const url = `/get_predictions?plant_id=${plantId}&date=${date}`;
+    console.log("API 요청:", url);
 
-//   try {
-//     // 1. 로딩 화면 표시
-//     document.body.innerHTML = `
-//             <div style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;">
-//                 <h2>예측 중입니다... 잠시만 기다려주세요 ⏳</h2>
-//                 <div class="spinner"></div>
-//             </div>
-//         `;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("데이터 로딩 실패");
 
-//     // 2. /predict 요청
-//     const response = await fetch("/predict", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(payload),
-//     });
+      const data = await response.json();
 
-//     if (!response.ok) throw new Error("예측 요청 실패");
+      // 결과 데이터 표시
+      document.getElementById("resultDate").innerText = data.requested_date;
+      document.getElementById("totalYield").innerText =
+        data.predicted_yield_for_requested_date.toFixed(2) + " kWh";
 
-//     // 3. 완료되면 /result 페이지로 이동
+      // 기존 차트가 있으면 파괴
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
 
-//     window.location.href = "/result";
-//   } catch (error) {
-//     alert("오류가 발생했습니다: " + error.message);
-//   } finally {
-//     // (옵션) result.html로 이동 후엔 로딩창 자동으로 사라짐
-//     document.getElementById("loading").style.display = "none";
-//   }
-// }
-
-function initResultPage() {
-  if (document.getElementById("dateRange")) {
-    flatpickr("#dateRange", { mode: "range" });
-    loadResults(); // 기본 조회
-  }
-}
-
-async function loadResults() {
-  try {
-    const response = await fetch("/results");
-    const data = await response.json();
-
-    // 날짜 필터링
-    const dateRange = document.getElementById("dateRange").value.split(" to ");
-    let filtered = data;
-    if (dateRange.length === 2) {
-      const start = new Date(dateRange[0]);
-      const end = new Date(dateRange[1]);
-      filtered = data.filter((r) => {
-        const ts = new Date(r.ts);
-        return ts >= start && ts <= end;
+      // 새 차트를 생성하고 지역 변수에 저장
+      const ctx = document.getElementById("resultChart").getContext("2d");
+      chartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: data.chart_data.map((r) => r.date),
+          datasets: [
+            {
+              label: "일별 예측 발전량 (Daily Yield)",
+              data: data.chart_data.map((r) => r.yield),
+              borderColor: "#4A90E2",
+              backgroundColor: "rgba(74, 144, 226, 0.1)",
+              fill: true,
+              tension: 0.3,
+            },
+          ],
+        },
       });
+    } catch (err) {
+      console.error("차트 업데이트 실패:", err);
+      // 사용자에게 더 친절한 에러 메시지 표시
+      const chartContainer =
+        document.getElementById("resultChart").parentElement;
+      chartContainer.innerHTML = `<p style="color: red; text-align: center;">데이터를 불러오는 중 오류가 발생했습니다. (${date})</p>`;
     }
-
-    const labels = filtered.map((r) => new Date(r.ts).toLocaleString());
-    const values = filtered.map((r) => r.ac_power);
-
-    const ctx = document.getElementById("resultChart").getContext("2d");
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: labels.reverse(),
-        datasets: [
-          {
-            label: "예측 발전량 (AC_POWER)",
-            data: values.reverse(),
-            borderColor: "blue",
-            backgroundColor: "rgba(0, 0, 255, 0.1)",
-            fill: true,
-            tension: 0.3,
-          },
-        ],
-      },
-    });
-  } catch (err) {
-    console.error("결과 조회 실패:", err);
   }
 }
-
-window.addEventListener("DOMContentLoaded", initResultPage);

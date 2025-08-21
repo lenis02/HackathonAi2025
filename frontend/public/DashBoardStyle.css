@@ -1,137 +1,149 @@
-* {
-  box-sizing: border-box;
-}
-
+/* General Styles */
 body {
-  font-size: 14px;
+  background-color: #ffc783;
+  font-family: "Helvetica Neue", Arial, sans-serif;
   margin: 0;
-  padding: 0;
-  background: rgba(255,199,131,1);
-  font-family: "Noto Sans", sans-serif;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-/* 전체 보드 */
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
 .topBoard {
   width: 100%;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 32px;
-}
-
-/* 중앙 배경 컨테이너 */
-.background {
-  width: 100%;
   max-width: 1200px;
-  background: white;
+}
+
+/* Main Dashboard Container */
+.background {
+  /* ✨ [수정됨] 원래의 연한 회색 배경으로 복구 */
+  background-color: #f6f7fb;
   border-radius: 16px;
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-/* ================== 상단 4개 박스 ================== */
-.top-row {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap; /* 화면 줄어들면 자동 줄바꿈 */
-}
-
-.top-row > div {
-  flex: 1;
-  min-width: 200px;
-  height: 120px;
-  padding: 16px;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.left1 { background: rgba(237,238,252,1); }
-.left2 { background: rgba(230,241,253,1); }
-.left3 { background: rgba(237,238,252,1); }
-.left4 { background: rgba(230,241,253,1); }
-
-.title1, .title2, .title3, .title4 {
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #111;
-}
-
-.cotent1, .content2, .content3, .content4 {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-/* ================== 하단 그래프 ================== */
-.second-row {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.graph1, .graph2 {
-  background: #fbebfe;
   padding: 24px;
-  border-radius: 16px;
-  min-height: 300px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* Top Row Info Boxes */
+.top-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* 정보 박스에 파스텔톤 배경색 적용 */
+.left1,
+.left2,
+.left3,
+.left4 {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #eee;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
-.graph1 {
-  flex: 3;
-}
+.left1 {
+  background-color: #e6f7ff;
+} /* 파스텔 블루 */
+.left2 {
+  background-color: #f6ffed;
+} /* 파스텔 그린 */
+.left3 {
+  background-color: #fffbe6;
+} /* 파스텔 옐로우 */
+.left4 {
+  background-color: #f9f0ff;
+} /* 파스텔 퍼플 */
 
-.graph2 {
-  flex: 1;
-}
-
-.title5, .title6 {
-  font-weight: bold;
-  margin-bottom: 12px;
-  color: #111;
-}
-
-.subject1, .subject2 {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  justify-content: center;
-}
-
-.detail11, .detail12, .detail21, .detail22 {
-  color: #111;
-}
-
-/* ============== 결과 요약 ============ */
+.title1,
+.title2,
+.title3,
+.title4,
+.title5,
 .third-title {
   font-weight: bold;
   margin-bottom: 12px;
+  color: #555;
+  font-size: 1em;
+}
+
+/* 정보 박스 안의 컨텐츠 스타일 */
+.cotent1,
+.content3 {
   color: #111;
+  font-size: 1.4em;
+  font-weight: bold;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
 }
 
-/* ============ 다운로드 =============== */
-/* 버튼 스타일 및 오른쪽 하단 고정 */
-#downloadBtn {
-    position: fixed; /* 화면에 고정 */
-    bottom: 32px;    /* 하단에서 20px */
-    right: 40px;     /* 오른쪽에서 20px */
-    padding: 12px 20px;
-    background-color: #ab6b1d;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    z-index: 1000;   /* 다른 요소 위에 표시 */
+#resultDateRange {
+  width: 100%;
+  height: 35px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
-#downloadBtn:hover {
-    background-color: #B65B00;
+.left4 {
+  padding: 0 !important;
+}
+
+.left4 #downloadCsvBtn {
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  line-height: 1.3;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent; /* 배경색을 투명하게 하여 박스 색이 보이도록 함 */
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  color: #333; /* 글자색 추가 */
+}
+
+.left4 #downloadCsvBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05); /* 호버 시 살짝 어두워지는 효과 */
+}
+
+/* Second Row (Graphs) */
+.second-row {
+  margin-bottom: 20px;
+}
+
+.graph1 {
+  background-color: #ffffff; /* ✨ [수정됨] 그래프 배경은 흰색으로 */
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+/* Third Row (Summary) */
+.third-row {
+  background-color: #ffffff; /* ✨ [수정됨] 요약 배경은 흰색으로 */
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+/* 총 발전량 텍스트 스타일 */
+.third-content {
+  font-size: 2em;
+  font-weight: bold;
+  color: #4a90e2; /* 파란색으로 강조 */
 }
