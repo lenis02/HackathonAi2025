@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from backend.app.db.database import SessionLocal
 from backend.app.models.prediction import FuturePrediction
-import sys, os
+
+# --- 이 파일의 전체 내용이 아래와 같아야 합니다 ---
 
 router = APIRouter()
 
@@ -29,7 +30,7 @@ def get_predictions(plant_id: str, date: str, db: Session = Depends(get_db)):
     ).first()
     predicted_yield = target_day_data.daily_yield if target_day_data else 0
 
-    # 2. 그래프용 8일치 데이터 조회
+    # 2. 그래프용 8일치 데이터 조회 (오늘 ~ 과거 7일)
     start_date = target_date - timedelta(days=7)
     chart_data_query = db.query(FuturePrediction).filter(
         FuturePrediction.plant_id == plant_id,

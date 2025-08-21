@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from ..db.database import SessionLocal
-from ..models.prediction import Prediction
+from ..models.prediction import FuturePrediction
 from datetime import datetime, timedelta
 
 router = APIRouter()
@@ -19,30 +19,24 @@ def get_results(date: str = Query(None), db: Session = Depends(get_db)):
     """
     특정 날짜 데이터만 조회 (YYYY-MM-DD)
     """
-    query = db.query(Prediction)
+    query = db.query(FuturePrediction)
 
     if date:
         try:
             # 문자열을 datetime으로 변환
-            start_date = datetime.strptime(date, "%Y-%m-%d")
-            end_date = start_date + timedelta(days=1)
-
-            query = query.filter(
-                Prediction.ts >= start_date,
-                Prediction.ts < end_date
-            )
+            target_date = datetime.strptime(date, "%Y-%m-%d").date()
+            query = query.filter(FuturePrediction.date == str(target_date))
         except ValueError:
             return {"error": "Invalid date format. Use YYYY-MM-DD"}
 
-    results = query.order_by(Prediction.id.desc()).limit(50).all()
+    results = query.order_by(FuturePrediction.id.desc()).limit(50).all()
 
     return [
         {
             "id": r.id,
             "plant_id": r.plant_id,
-            "source_key": r.source_key,
-            "ts": r.ts,
-            "ac_power": r.ac_power
+            "date":r.date,
+            "daily_yield":r.daily_yield
         }
         for r in results
     ]

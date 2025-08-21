@@ -1,107 +1,119 @@
 import os
 import sys
-import pandas as pd
 import numpy as np
+import pandas as pd
 import joblib
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
-import requests # 날씨 API 요청용
-
+from sqlalchemy import desc
 
 # --- 설정 ---
-# 프로젝트 루트의 .env 파일 로드 (API 키 등 보관)
-load_dotenv() 
-# sys.path에 프로젝트 루트 추가
-from backend.app.db.database import SessionLocal, engine
-from backend.app.models.prediction import FuturePrediction, Base
+# sys.path에 프로젝트 루트 추가 (backend 폴더에서 실행한다고 가정)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# --- OpenWeatherMap 날씨 API 함수 ---
-def get_future_weather_forecast(lat, lon, days=7):
-    # OpenWeatherMap One Call API 3.0 (7일 예보)
-    # 참고: 90일 예보를 받으려면 유료 플랜이 필요합니다. 여기서는 7일 예보로 테스트합니다.
-    api_key = os.getenv("OPENWEATHER_API_KEY")
-    if not api_key:
-        raise ValueError("환경변수에서 OPENWEATHER_API_KEY를 찾을 수 없습니다.")
-        
-    url = f"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=current,minutely,hourly,alerts&appid={api_key}&units=metric"
-    
-    response = requests.get(url)
-    response.raise_for_status() # 오류 시 예외 발생
-    data = response.json()['daily']
+from app.db.database import SessionLocal, engine
+from app.models.prediction import FuturePrediction, Base
+from tensorflow.keras.models import load_model
 
-    # 15분 간격 데이터프레임 생성
-    all_forecasts = []
-    for day_data in data[:days]:
-        date = datetime.fromtimestamp(day_data['dt']).date()
-        for i in range(24 * 4): # 96 intervals of 15 mins
-            ts = datetime.combine(date, datetime.min.time()) + timedelta(minutes=15 * i)
-            hour = ts.hour
-            # 낮 시간(6-18시)에만 일사량 존재한다고 가정
-            irradiation = max(0, np.sin((hour - 6) * np.pi / 12) * 900) if 6 <= hour <= 18 else 0
-            
-            all_forecasts.append({
-                "DATE_TIME": ts,
-                "AMBIENT_TEMPERATURE": day_data['temp']['day'],
-                "MODULE_TEMPERATURE": day_data['temp']['day'] + irradiation * 0.02, # 간단한 모델링
-                "IRRADIATION": irradiation,
-            })
-            
-    return pd.DataFrame(all_forecasts)
-
-# --- 피처 엔지니어링 함수 ---
-def feature_engineer_advanced(df):
-    df['MINUTE'] = df['DATE_TIME'].dt.minute
-    df['DAY_OF_WEEK'] = df['DATE_TIME'].dt.dayofweek
-    df['HOUR_SIN'] = np.sin(2 * np.pi * df['DATE_TIME'].dt.hour / 24.0)
-    df['HOUR_COS'] = np.cos(2 * np.pi * df['DATE_TIME'].dt.hour / 24.0)
-    df['DOY_SIN'] = np.sin(2 * np.pi * df['DATE_TIME'].dt.dayofyear / 365.0)
-    df['DOY_COS'] = np.cos(2 * np.pi * df['DATE_TIME'].dt.dayofyear / 365.0)
-    return df
+# --- 중요 설정값 ---
+WINDOW_SIZE = 7       # 모델 학습 시 사용한 일 단위 시퀀스 길이
+DAYS_TO_PREDICT = 7   # 며칠 예측할지
 
 # --- 메인 실행 함수 ---
-def generate_and_save_predictions():
+def generate_and_save_daily_predictions():
+    print("🚀 하루 단위 LSTM 예측 시작")
+
     # 1. DB 테이블 생성 (없으면)
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
+    print("✅ DB 세션 및 테이블 준비 완료")
 
-    # 2. 교체된 모델 로드
-    model_path = os.path.join(os.path.dirname(__file__), "..", "app", "ml", "ac_power_model.pkl")
-    model = joblib.load(model_path)
-    
-    # 3. 남원시 위경도로 미래 날씨 데이터 가져오기
-    # 남원시 위도/경도: 35.4077, 127.3905
-    future_weather_df = get_future_weather_forecast(lat=35.4077, lon=127.3905, days=7) # 7일치 예보
-    future_features_df = feature_engineer_advanced(future_weather_df.copy())
+    # 2. 모델 & 스케일러 로드
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    model_path = os.path.join(base_dir, "app", "ml", "lstm_daily_model.h5")
+    scaler_path = os.path.join(base_dir, "app", "ml", "lstm_daily_model_with_scaler.pkl")
 
-    # 4. AC_POWER 예측
-    features_for_model = model.get_booster().feature_names
-    for col in features_for_model:
-        if col not in future_features_df.columns:
-            future_features_df[col] = 0
-    
-    predictions_ac = model.predict(future_features_df[features_for_model])
-    predictions_ac[predictions_ac < 0] = 0
-    future_weather_df['AC_POWER_PREDICTED'] = predictions_ac
+    try:
+        model = load_model(model_path, compile=False)
+        scaler_data = joblib.load(scaler_path)
+        scaler = scaler_data['scaler']
+        print("✅ 모델 & 스케일러 로딩 성공")
+    except Exception as e:
+        print(f"❌ 모델/스케일러 로딩 실패: {e}")
+        db.close()
+        return
 
-    # 5. 일별 발전량(DAILY_YIELD) 집계
-    future_weather_df['DATE'] = future_weather_df['DATE_TIME'].dt.date
-    daily_yield = future_weather_df.groupby('DATE')['AC_POWER_PREDICTED'].sum()
+    # 3. 발전소별 예측 실행
+    plant_ids = ["4135001", "4136001"]  # 광주 / 남원
+    today = datetime.today().date()
 
-    # 6. DB에 저장
-    print("예측 결과를 DB에 저장합니다...")
-    plant_id_namwon = "4236001" # 남원 ID
-    db.query(FuturePrediction).filter(FuturePrediction.plant_id == plant_id_namwon).delete() # 기존 데이터 삭제
-    
-    for date, yield_value in daily_yield.items():
-        record = FuturePrediction(
-            plant_id=plant_id_namwon,
-            date=str(date),
-            daily_yield=yield_value
-        )
-        db.add(record)
-    db.commit()
-    print("저장 완료!")
+    for plant_id in plant_ids:
+        print(f"\n=== 발전소 {plant_id} 예측 시작 ===")
+
+        # 기존 데이터 삭제
+        try:
+            db.query(FuturePrediction).filter(FuturePrediction.plant_id == plant_id).delete()
+            db.commit()
+            print(f"기존 {plant_id} 데이터 삭제 완료")
+        except Exception as e:
+            print(f"⚠️ 데이터 삭제 실패: {e}")
+            db.rollback()
+            continue
+
+        # (실제라면 DB의 과거 데이터를 불러와야 함)
+        # 여기서는 시뮬레이션을 위해 랜덤 30일 데이터 생성
+        past_days = 30
+        np.random.seed(42)
+        past_data = np.random.randint(2000, 8000, size=(past_days, 1))  # 과거 30일치
+
+        if len(past_data) < WINDOW_SIZE:
+            print(f"❌ 발전소 {plant_id}: 최근 {WINDOW_SIZE}일 데이터 부족")
+            continue
+
+        # 시퀀스 준비
+        current_sequence = past_data[-WINDOW_SIZE:]
+        current_sequence_scaled = scaler.transform(current_sequence)
+
+        future_predictions = []
+
+        # 7일 예측 반복
+        for _ in range(DAYS_TO_PREDICT):
+            reshaped_seq = current_sequence_scaled.reshape(1, WINDOW_SIZE, 1)
+            next_scaled = model.predict(reshaped_seq, verbose=0)
+
+            # 역정규화
+            next_value = scaler.inverse_transform(next_scaled)[0][0]
+
+            future_predictions.append(next_value)
+
+            # 시퀀스 갱신
+            current_sequence_scaled = np.append(current_sequence_scaled[1:], next_scaled, axis=0)
+
+        # DataFrame 변환
+        future_dates = [today + timedelta(days=i+1) for i in range(DAYS_TO_PREDICT)]
+        df = pd.DataFrame({
+            "date": future_dates,
+            "daily_yield": future_predictions
+        })
+
+        # DB 저장 - 값을 10으로 나눠서 저장
+        for _, row in df.iterrows():
+            # 예측값을 10으로 나눠서 저장
+            adjusted_yield = row['daily_yield'] / 10
+            
+            record = FuturePrediction(
+                plant_id=plant_id,
+                date=str(row['date']),
+                daily_yield=adjusted_yield
+            )
+            db.add(record)
+            print(f"저장: {plant_id} {row['date']} → {row['daily_yield']:.2f} → {adjusted_yield:.2f} kWh")
+
+        db.commit()
+        print(f"💾 발전소 {plant_id} 데이터 저장 완료!")
+
     db.close()
+    print("🎉 모든 발전소 예측 완료")
+
 
 if __name__ == "__main__":
-    generate_and_save_predictions()
+    generate_and_save_daily_predictions()

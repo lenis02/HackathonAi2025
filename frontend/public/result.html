@@ -126,147 +126,6 @@
 
     <!-- ✨ 중요: 기존 script.js의 모든 기능이 이 안에 포함되었습니다. -->
     <script>
-      // document.addEventListener("DOMContentLoaded", function () {
-      //   // --- 1. 필요한 변수 및 매핑 정보 설정 ---
-      //   let chartInstance = null;
-      //   const plantId = sessionStorage.getItem("selectedPlantId");
-
-      //   const idToRegionMapping = {
-      //     4135001: "광주광역시 북구 용봉동",
-      //     4236001: "전라북도 남원시 주천면 용담리",
-      //   };
-
-      //   // --- 2. 페이지 초기화 ---
-      //   if (!plantId) {
-      //     alert("선택된 지역 정보가 없습니다. 메인 페이지로 돌아갑니다.");
-      //     window.location.href = "/";
-      //     return;
-      //   }
-
-      //   // main.html에서 선택한 지역 이름 표시
-      //   const regionName = idToRegionMapping[plantId] || "알 수 없는 지역";
-      //   document.getElementById("regionDisplay").textContent = regionName;
-
-      //   // --- 3. 날짜 선택기(flatpickr) 설정 ---
-      //   const datePicker = flatpickr("#resultDateRange", {
-      //     defaultDate: "today",
-      //     onReady: function (selectedDates, dateStr, instance) {
-      //       fetchAndDrawChart(instance.input.value);
-      //     },
-      //     onClose: function (selectedDates, dateStr, instance) {
-      //       fetchAndDrawChart(dateStr);
-      //     },
-      //   });
-
-      //   // --- 4. CSV 다운로드 버튼 이벤트 연결 ---
-      //   const downloadBtn = document.getElementById("downloadCsvBtn");
-      //   if (downloadBtn) {
-      //     // 초기에는 비활성화된 것처럼 보이게 처리
-      //     downloadBtn.style.opacity = 0.5;
-      //     downloadBtn.style.cursor = "not-allowed";
-      //   }
-
-      //   // --- 5. 핵심 함수: API 호출 및 화면 업데이트 ---
-      //   async function fetchAndDrawChart(date) {
-      //     if (!date) return;
-      //     const url = `/get_predictions?plant_id=${plantId}&date=${date}`;
-
-      //     try {
-      //       const response = await fetch(url);
-      //       if (!response.ok) throw new Error("데이터 로딩 실패");
-      //       const data = await response.json();
-
-      //       // [데이터 표시] 총 발전량
-      //       const totalYield =
-      //         data.predicted_yield_for_requested_date.toFixed(2);
-      //       document.getElementById(
-      //         "totalYield"
-      //       ).textContent = `${totalYield} kWh`;
-
-      //       // [데이터 표시] 예측량 요약
-      //       const chartValues = data.chart_data.map((r) => r.yield);
-      //       const averageYield =
-      //         chartValues.length > 0
-      //           ? (
-      //               chartValues.reduce((a, b) => a + b, 0) / chartValues.length
-      //             ).toFixed(2)
-      //           : "0.00";
-      //       document.getElementById(
-      //         "avgYield"
-      //       ).textContent = `${averageYield} kWh`;
-
-      //       // [차트 그리기]
-      //       if (chartInstance) {
-      //         chartInstance.destroy();
-      //       }
-      //       const ctx = document.getElementById("resultChart").getContext("2d");
-      //       chartInstance = new Chart(ctx, {
-      //         type: "line",
-      //         data: {
-      //           labels: data.chart_data.map((r) => r.date),
-      //           datasets: [
-      //             {
-      //               label: "일별 예측 발전량 (Daily Yield)",
-      //               data: chartValues,
-      //               borderColor: "#4A90E2",
-      //               backgroundColor: "rgba(74, 144, 226, 0.1)",
-      //               fill: true,
-      //               tension: 0.3,
-      //             },
-      //           ],
-      //         },
-      //       });
-
-      //       // [다운로드 버튼 활성화 및 이벤트 재연결]
-      //       if (downloadBtn) {
-      //         downloadBtn.style.opacity = 1;
-      //         downloadBtn.style.cursor = "pointer";
-      //         // 기존 이벤트 제거 후 새로 연결 (중복 방지)
-      //         const newBtn = downloadBtn.cloneNode(true);
-      //         downloadBtn.parentNode.replaceChild(newBtn, downloadBtn);
-      //         newBtn.addEventListener("click", function () {
-      //           downloadAsCsv(
-      //             data.chart_data,
-      //             `prediction_${plantId}_${date}.csv`
-      //           );
-      //         });
-      //       }
-      //     } catch (err) {
-      //       console.error("차트 업데이트 실패:", err);
-      //       document.getElementById(
-      //         "resultChart"
-      //       ).parentElement.innerHTML = `<p style="color: red; text-align: center;">데이터를 불러오는 중 오류가 발생했습니다.</p>`;
-      //     }
-      //   }
-
-      //   // --- 6. CSV 다운로드 헬퍼 함수 ---
-      //   function downloadAsCsv(data, filename) {
-      //     if (!data || data.length === 0) {
-      //       alert("다운로드할 데이터가 없습니다.");
-      //       return;
-      //     }
-      //     const headers = Object.keys(data[0]);
-      //     const csvContent = [
-      //       headers.join(","),
-      //       ...data.map((row) =>
-      //         headers.map((header) => row[header]).join(",")
-      //       ),
-      //     ].join("\n");
-
-      //     const blob = new Blob([`\uFEFF${csvContent}`], {
-      //       type: "text/csv;charset=utf-8;",
-      //     });
-      //     const link = document.createElement("a");
-      //     const url = URL.createObjectURL(blob);
-      //     link.setAttribute("href", url);
-      //     link.setAttribute("download", filename);
-      //     link.style.visibility = "hidden";
-      //     document.body.appendChild(link);
-      //     link.click();
-      //     document.body.removeChild(link);
-      //   }
-      // });
-
       document.addEventListener("DOMContentLoaded", function () {
         // --- 1. 필요한 변수 및 매핑 정보 설정 ---
         let chartInstance = null;
@@ -274,7 +133,7 @@
 
         const idToRegionMapping = {
           4135001: "광주광역시 북구 용봉동",
-          4236001: "전라북도 남원시 주천면 용담리",
+          4136001: "전라북도 남원시 주천면 용담리",
         };
 
         // --- 2. 페이지 초기화 ---
@@ -284,16 +143,17 @@
           return;
         }
 
-        // main.html에서 선택한 지역 이름 표시
         const regionName = idToRegionMapping[plantId] || "알 수 없는 지역";
         document.getElementById("regionDisplay").textContent = regionName;
 
         // --- 3. 날짜 선택기(flatpickr) 설정 ---
         const datePicker = flatpickr("#resultDateRange", {
           defaultDate: "today",
+          // 페이지가 준비되면 오늘 날짜로 차트를 바로 그립니다.
           onReady: function (selectedDates, dateStr, instance) {
             fetchAndDrawChart(instance.input.value);
           },
+          // 날짜를 새로 선택하면 차트를 다시 그립니다.
           onClose: function (selectedDates, dateStr, instance) {
             fetchAndDrawChart(dateStr);
           },
@@ -309,7 +169,7 @@
             if (!response.ok) throw new Error("데이터 로딩 실패");
             const data = await response.json();
 
-            // [데이터 표시] 총 발전량과 평균 발전량을 계산하여 '예측량 요약'에 표시
+            // --- 💡 수정된 부분 1: ID에 맞게 각각의 위치에 데이터를 표시 ---
             const totalYield =
               data.predicted_yield_for_requested_date.toFixed(2);
             const chartValues = data.chart_data.map((r) => r.yield);
@@ -319,9 +179,13 @@
                     chartValues.reduce((a, b) => a + b, 0) / chartValues.length
                   ).toFixed(2)
                 : "0.00";
+
             document.getElementById(
-              "predictionDisplay"
-            ).textContent = `총 ${totalYield} kWh / 평균 ${averageYield} kWh`;
+              "totalYield"
+            ).textContent = `${totalYield} kWh`;
+            document.getElementById(
+              "avgYield"
+            ).textContent = `${averageYield} kWh`;
 
             // [차트 그리기]
             if (chartInstance) {
@@ -349,15 +213,18 @@
               },
             });
 
-            // [다운로드 링크 활성화]
-            const downloadLink = document.getElementById("dashboardDownload");
-            downloadLink.onclick = function (event) {
-              event.preventDefault(); // 링크의 기본 동작(페이지 이동) 방지
+            // --- 💡 수정된 부분 2: 다운로드 버튼 ID를 일치시키고 이벤트 연결 ---
+            const downloadBtn = document.getElementById("downloadCsvBtn");
+            // 기존에 연결된 이벤트가 있다면 제거 (중복 방지)
+            const newBtn = downloadBtn.cloneNode(true);
+            downloadBtn.parentNode.replaceChild(newBtn, downloadBtn);
+            // 새 버튼에 클릭 이벤트 추가
+            newBtn.addEventListener("click", function () {
               downloadAsCsv(
                 data.chart_data,
                 `prediction_${plantId}_${date}.csv`
               );
-            };
+            });
           } catch (err) {
             console.error("차트 업데이트 실패:", err);
             document.getElementById(
