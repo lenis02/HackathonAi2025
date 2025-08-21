@@ -98,27 +98,29 @@ h2 {
 }
 
 .left4 {
-  padding: 0 !important;
+  display: flex;
+  flex-direction: column; /* 세로 배치 */
+  gap: 10px; /* 버튼 사이 여백 */
+  padding: 16px; /* 원래 다른 left랑 동일하게 */
 }
 
-.left4 #downloadCsvBtn {
+.left4 button {
   font-weight: bold;
   font-size: 16px;
   text-align: center;
   line-height: 1.3;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  background-color: transparent; /* 배경색을 투명하게 하여 박스 색이 보이도록 함 */
+  padding: 12px; /* 버튼 안쪽 여백 */
+  width: 100%; /* 가로는 꽉 차게 */
+  background-color: transparent;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.3s;
-  color: #333; /* 글자색 추가 */
+  color: #333;
 }
 
-.left4 #downloadCsvBtn:hover {
-  background-color: rgba(0, 0, 0, 0.05); /* 호버 시 살짝 어두워지는 효과 */
+.left4 button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Second Row (Graphs) */

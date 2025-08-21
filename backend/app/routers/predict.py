@@ -25,20 +25,29 @@ def get_predictions(plant_id: str, date: str, db: Session = Depends(get_db)):
 
     # 1. 요청된 날짜의 발전량 조회
     target_day_data = db.query(FuturePrediction).filter(
-        FuturePrediction.plant_id == plant_id,
-        FuturePrediction.date == str(target_date)
+        FuturePrediction.plant_id == plant_id,   # ← 이미 String 컬럼이니 int 변환 X
+        FuturePrediction.date == target_date
     ).first()
+
     predicted_yield = target_day_data.daily_yield if target_day_data else 0
 
-    # 2. 그래프용 8일치 데이터 조회 (오늘 ~ 과거 7일)
+    # 2. 그래프용 8일치 데이터 조회
     start_date = target_date - timedelta(days=7)
     chart_data_query = db.query(FuturePrediction).filter(
         FuturePrediction.plant_id == plant_id,
-        FuturePrediction.date >= str(start_date),
-        FuturePrediction.date <= str(target_date)
+        FuturePrediction.date >= start_date,
+        FuturePrediction.date <= target_date
     ).order_by(FuturePrediction.date).all()
-    
-    chart_data = [{"date": r.date, "yield": r.daily_yield} for r in chart_data_query]
+
+    # --- 📌 여기서 plant_id별 데이터 출력 ---
+    print("[DEBUG] 요청 plant_id:", plant_id)
+    for row in chart_data_query:
+        print("[DEBUG] DB row => plant_id:", row.plant_id,
+              "date:", row.date,
+              "daily_yield:", row.daily_yield)
+
+    # JSON 변환
+    chart_data = [{"date": str(r.date), "yield": r.daily_yield} for r in chart_data_query]
 
     return {
         "plant_id": plant_id,

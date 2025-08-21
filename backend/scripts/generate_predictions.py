@@ -46,24 +46,25 @@ def generate_and_save_daily_predictions():
     plant_ids = ["4135001", "4136001"]  # 광주 / 남원
     today = datetime.today().date()
 
-    for plant_id in plant_ids:
+    # 기존 데이터 삭제
+    try:
+        db.query(FuturePrediction).delete()
+        db.commit()
+        print(f"기존 future_predictions 데이터 삭제 완료")
+    except Exception as e:
+        print(f"⚠️ 데이터 삭제 실패: {e}")
+        db.rollback()
+    
+    for idx, plant_id in enumerate(plant_ids):
         print(f"\n=== 발전소 {plant_id} 예측 시작 ===")
 
-        # 기존 데이터 삭제
-        try:
-            db.query(FuturePrediction).filter(FuturePrediction.plant_id == plant_id).delete()
-            db.commit()
-            print(f"기존 {plant_id} 데이터 삭제 완료")
-        except Exception as e:
-            print(f"⚠️ 데이터 삭제 실패: {e}")
-            db.rollback()
-            continue
 
         # (실제라면 DB의 과거 데이터를 불러와야 함)
         # 여기서는 시뮬레이션을 위해 랜덤 30일 데이터 생성
         past_days = 30
-        np.random.seed(42)
-        past_data = np.random.randint(2000, 8000, size=(past_days, 1))  # 과거 30일치
+        np.random.seed(42 + idx)  # 발전소별로 다른 시드
+        past_data = np.random.randint(2000, 8000, size=(past_days, 1))
+
 
         if len(past_data) < WINDOW_SIZE:
             print(f"❌ 발전소 {plant_id}: 최근 {WINDOW_SIZE}일 데이터 부족")
@@ -102,7 +103,7 @@ def generate_and_save_daily_predictions():
             
             record = FuturePrediction(
                 plant_id=plant_id,
-                date=str(row['date']),
+                date=row['date'],
                 daily_yield=adjusted_yield
             )
             db.add(record)

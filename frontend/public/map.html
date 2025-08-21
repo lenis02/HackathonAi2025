@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Map</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+      #map {
+        width: 100%;
+        height: 90vh;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text" id="datePicker" />
+
+    <div id="map"></div>
+
+    <script>
+      // --- 1. 쿼리 파라미터에서 날짜 가져오기 ---
+      const params = new URLSearchParams(window.location.search);
+      const initialDate =
+        params.get("date") || new Date().toISOString().split("T")[0];
+
+      // --- 2. 지도 초기화 (기본 위치와 줌 조정) ---
+      const map = L.map("map").setView(
+        [35.276403045519125, 127.09327697753908],
+        10
+      );
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+      }).addTo(map);
+
+      function getColor(yieldValue) {
+        if (yieldValue < 1000) return "green";
+        if (yieldValue < 4000) return "yellow";
+        return "red";
+      }
+
+      // --- 3. 데이터 불러오기 ---
+      async function fetchData(date) {
+        try {
+          const res = await fetch(`/get_map_data?date=${date}`);
+          if (!res.ok) throw new Error("API 요청 실패");
+          const data = await res.json();
+
+          // 기존 원형 제거
+          map.eachLayer((layer) => {
+            if (layer instanceof L.Circle) map.removeLayer(layer);
+          });
+
+          // 원형 다시 그림
+          data.forEach((d) => {
+            L.circle([d.lat, d.lng], {
+              color: getColor(d.yield),
+              fillColor: getColor(d.yield),
+              fillOpacity: 0.6,
+              radius: 10000,
+            })
+              .bindPopup(
+                `발전소 ${d.plant_id}<br>발전량: ${d.yield.toFixed(2)} kWh`
+              )
+              .addTo(map);
+          });
+        } catch (err) {
+          console.error("지도 데이터 불러오기 실패:", err);
+        }
+      }
+
+      // --- 4. flatpickr 초기화 ---
+      flatpickr("#datePicker", {
+        defaultDate: initialDate, // ← result.html에서 넘어온 날짜
+        onChange: function (selectedDates, dateStr) {
+          fetchData(dateStr);
+        },
+      });
+
+      // --- 5. 페이지 처음 열릴 때 ---
+      fetchData(initialDate);
+
+      // --- 6. 새로고침 시 루트("/")로 리다이렉트 ---
+      if (performance.navigation.type === 1) {
+        window.location.href = "/";
+      }
+    </script>
+  </body>
+</html>

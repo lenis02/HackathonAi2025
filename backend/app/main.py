@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.app.routers import predict, result
+from backend.app.routers import predict, result, map
 from backend.app.db.database import Base, engine
 from backend.app.models import prediction
 from fastapi.responses import FileResponse
@@ -19,6 +19,8 @@ app.mount("/static", StaticFiles(directory="frontend/public"), name="static")
 # 라우터 등록
 app.include_router(predict.router)
 app.include_router(result.router)
+app.include_router(map.router)
+
 
 # 루트("/") → main.html
 @app.get("/")

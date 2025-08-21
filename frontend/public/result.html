@@ -1,56 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
-    <title>예측 결과</title>
-
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link rel="stylesheet" href="/static/style.css" />
-    <script src="/static/js/script.js" defer></script>
-  </head>
-  <body>
-    <div class="result-container" style="padding: 20px; text-align: center">
-      <h2>예측 결과 조회</h2>
-
-      <div class="dateSelect" style="margin-bottom: 20px">
-        <h3>날짜 선택</h3>
-        <input
-          type="text"
-          id="resultDateRange"
-          placeholder="조회할 날짜를 선택하세요"
-          style="padding: 8px"
-        />
-        <button id="downloadCsvBtn" style="margin-left: 10px">
-          CSV 다운로드
-        </button>
-      </div>
-
-      <div class="yield-display" style="margin-bottom: 20px; font-size: 1.2em">
-        선택한 날짜 [<span id="resultDate" style="font-weight: bold"></span>]의
-        총 예측 발전량:
-        <span id="totalYield" style="font-weight: bold; color: #4a90e2"></span>
-      </div>
-
-      <div class="chart-container" style="width: 80%; margin: auto">
-        <canvas id="resultChart"></canvas>
-      </div>
-    </div>
-
-    <footer class="footer">
-      <div class="footer-content">
-        <p>© 2025 Check on Solar Power. All rights reserved.</p>
-      </div>
-    </footer>
-  </body>
-</html> -->
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -101,14 +48,15 @@
             </div>
           </div>
 
-          <!-- 다운로드 버튼 -->
+          <!-- 다운로드 & 지도 버튼 -->
           <div class="left4">
-            <button id="downloadCsvBtn">.scv <br />다운로드</button>
+            <button id="downloadCsvBtn">.csv <br />다운로드</button>
+            <button id="goMapBtn">지도 보기</button>
           </div>
         </div>
 
         <div class="second-row">
-          <!-- 그래프 1 -->
+          <!-- 그래프 -->
           <div class="graph1">
             <div class="title5">일별 예측 발전량 (Daily Yield)</div>
             <div
@@ -130,19 +78,20 @@
       </div>
     </div>
 
-    <!-- ✨ 중요: 기존 script.js의 모든 기능이 이 안에 포함되었습니다. -->
+    <!-- 스크립트 -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // --- 1. 필요한 변수 및 매핑 정보 설정 ---
+        // --- 1. 변수 및 매핑 정보 ---
         let chartInstance = null;
         const plantId = sessionStorage.getItem("selectedPlantId");
+        console.log("선택된 plantId:", plantId);
 
         const idToRegionMapping = {
           4135001: "광주광역시 북구 용봉동",
           4136001: "전라북도 남원시 주천면 용담리",
         };
 
-        // --- 2. 페이지 초기화 ---
+        // --- 2. 초기화 ---
         if (!plantId) {
           alert("선택된 지역 정보가 없습니다. 메인 페이지로 돌아갑니다.");
           window.location.href = "/";
@@ -152,20 +101,18 @@
         const regionName = idToRegionMapping[plantId] || "알 수 없는 지역";
         document.getElementById("regionDisplay").textContent = regionName;
 
-        // --- 3. 날짜 선택기(flatpickr) 설정 ---
+        // --- 3. flatpickr ---
         const datePicker = flatpickr("#resultDateRange", {
           defaultDate: "today",
-          // 페이지가 준비되면 오늘 날짜로 차트를 바로 그립니다.
           onReady: function (selectedDates, dateStr, instance) {
             fetchAndDrawChart(instance.input.value);
           },
-          // 날짜를 새로 선택하면 차트를 다시 그립니다.
           onClose: function (selectedDates, dateStr, instance) {
             fetchAndDrawChart(dateStr);
           },
         });
 
-        // --- 4. 핵심 함수: API 호출 및 화면 업데이트 ---
+        // --- 4. 차트 업데이트 ---
         async function fetchAndDrawChart(date) {
           if (!date) return;
           const url = `/get_predictions?plant_id=${plantId}&date=${date}`;
@@ -175,15 +122,15 @@
             if (!response.ok) throw new Error("데이터 로딩 실패");
             const data = await response.json();
 
-            // 오늘 날짜 구하기
-            const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD 형식
+            // 오늘 날짜
+            const today = new Date().toISOString().split("T")[0];
 
             // 날짜 범위 표시
             document.getElementById(
               "selectedDateDisplay"
             ).textContent = `선택한 기간: ${today} ~ ${date}`;
 
-            // --- 💡 수정된 부분 1: ID에 맞게 각각의 위치에 데이터를 표시 ---
+            // 합계 / 평균
             const totalYield =
               data.predicted_yield_for_requested_date.toFixed(2);
             const chartValues = data.chart_data.map((r) => r.yield);
@@ -201,7 +148,7 @@
               "avgYield"
             ).textContent = `${averageYield} kWh`;
 
-            // [차트 그리기]
+            // 차트 그리기
             if (chartInstance) {
               chartInstance.destroy();
             }
@@ -227,12 +174,10 @@
               },
             });
 
-            // --- 💡 수정된 부분 2: 다운로드 버튼 ID를 일치시키고 이벤트 연결 ---
+            // CSV 다운로드 버튼
             const downloadBtn = document.getElementById("downloadCsvBtn");
-            // 기존에 연결된 이벤트가 있다면 제거 (중복 방지)
             const newBtn = downloadBtn.cloneNode(true);
             downloadBtn.parentNode.replaceChild(newBtn, downloadBtn);
-            // 새 버튼에 클릭 이벤트 추가
             newBtn.addEventListener("click", function () {
               downloadAsCsv(
                 data.chart_data,
@@ -243,11 +188,13 @@
             console.error("차트 업데이트 실패:", err);
             document.getElementById(
               "resultChart"
-            ).parentElement.innerHTML = `<p style="color: red; text-align: center;">데이터를 불러오는 중 오류가 발생했습니다.</p>`;
+            ).parentElement.innerHTML = `<p style="color: red; text-align: center;">
+                데이터를 불러오는 중 오류가 발생했습니다.
+              </p>`;
           }
         }
 
-        // --- 5. CSV 다운로드 헬퍼 함수 ---
+        // --- 5. CSV 다운로드 ---
         function downloadAsCsv(data, filename) {
           if (!data || data.length === 0) {
             alert("다운로드할 데이터가 없습니다.");
@@ -272,6 +219,21 @@
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
+        }
+
+        // --- 6. 지도 페이지 이동 버튼 ---
+        document.getElementById("goMapBtn").addEventListener("click", () => {
+          const date = document.getElementById("resultDateRange").value;
+          if (!date) {
+            alert("날짜를 먼저 선택하세요!");
+            return;
+          }
+          window.location.href = `/static/map.html?date=${date}`;
+        });
+
+        // 새로고침 감지해서 루트("/")로 리다이렉트
+        if (performance.navigation.type === 1) {
+          window.location.href = "/";
         }
       });
     </script>

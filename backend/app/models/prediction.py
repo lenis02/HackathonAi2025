@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Date
 from datetime import datetime
 from backend.app.db.database import Base
 
@@ -8,5 +8,5 @@ class FuturePrediction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     plant_id = Column(String, index=True)
-    date = Column(String, index=True) # 날짜 (YYYY-MM-DD)
+    date = Column(Date, index=True) # 날짜 (YYYY-MM-DD)
     daily_yield = Column(Float) # 하루 총 발전량

@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const plantMapping = {
   "광주광역시 북구 용봉동": "4135001",
-  "전라북도 남원시 주천면 용담리": "4236001",
+  "전라북도 남원시 주천면 용담리": "4136001",
 };
 
 // --- main.html 용 함수 ---
@@ -136,6 +136,7 @@ const plantMapping = {
 function goToResultPage() {
   const region = document.getElementById("region")?.value;
   const selectedPlantId = plantMapping[region];
+  console.log("선택된 지역:", region, "→ 매핑된 ID:", selectedPlantId); // 👈 디버깅 로그
 
   if (!selectedPlantId) {
     alert("지역을 먼저 선택하세요!");
@@ -144,6 +145,8 @@ function goToResultPage() {
 
   // 선택한 발전소 ID를 브라우저 임시 저장소에 저장
   sessionStorage.setItem("selectedPlantId", selectedPlantId);
+  console.log("sessionStorage에 저장됨:", selectedPlantId); // 👈 디버깅 로그
+
   // 결과 페이지로 이동
   window.location.href = "/result";
 }
@@ -186,6 +189,7 @@ function initializeResultPage() {
 
     const url = `/get_predictions?plant_id=${plantId}&date=${date}`;
     console.log("API 요청:", url);
+    console.log("응답 데이터:", data);
 
     try {
       const response = await fetch(url);
