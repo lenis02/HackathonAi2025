@@ -103,7 +103,7 @@
 
           <!-- 다운로드 버튼 -->
           <div class="left4">
-            <button id="downloadCsvBtn">대시보드 <br />다운로드</button>
+            <button id="downloadCsvBtn">.scv <br />다운로드</button>
           </div>
         </div>
 
@@ -111,8 +111,14 @@
           <!-- 그래프 1 -->
           <div class="graph1">
             <div class="title5">일별 예측 발전량 (Daily Yield)</div>
+            <div
+              id="selectedDateDisplay"
+              style="margin-bottom: 10px; font-weight: bold; color: #333"
+            >
+              -
+            </div>
             <div class="subject1">
-              <canvas id="resultChart" width="400" height="200"></canvas>
+              <canvas id="resultChart" width="400" height="300"></canvas>
             </div>
           </div>
         </div>
@@ -168,6 +174,14 @@
             const response = await fetch(url);
             if (!response.ok) throw new Error("데이터 로딩 실패");
             const data = await response.json();
+
+            // 오늘 날짜 구하기
+            const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD 형식
+
+            // 날짜 범위 표시
+            document.getElementById(
+              "selectedDateDisplay"
+            ).textContent = `선택한 기간: ${today} ~ ${date}`;
 
             // --- 💡 수정된 부분 1: ID에 맞게 각각의 위치에 데이터를 표시 ---
             const totalYield =

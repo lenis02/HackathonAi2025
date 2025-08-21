@@ -16,69 +16,51 @@
   </head>
 
   <body>
-    <!-- 내비게이션 바 -->
-    <div class="navbar">
-      <div class="logo">Check on Solar Power</div>
-      <div class="contact">문의하기</div>
-    </div>
+  <!-- 내비게이션 바 -->
+  <div class="navbar">
+    <div class="logo">Check on Solar Power</div>
+    <div class="contact">문의하기</div>
+  </div>
 
-    <div class="home">
-      <div class="div">
-        <div class="rectangle"></div>
-        <img src="/static/sun.png" alt="Solar Panel" class="solar-image" />
-        <div class="check-on-solar-power">Check on<br />Solar Power</div>
-        <div class="text-wrapper">태양광 발전량을 예측해 보세요!</div>
-      </div>
-    </div>
+  <!-- 메인 컨테이너 -->
+  <div class="main-container">
+    <img src="/static/sun.png" alt="Solar Panel" class="solar-image" />
+    <h1 class="title">Check on Solar Power</h1>
+    <p class="subtitle">태양광 발전량을 예측해 보세요!</p>
 
     <!-- 지역 선택 -->
-    <div class="select">
-      <div class="regionSelect">
-        <h2>지역 선택</h2>
-        <div class="input-container">
-          <select id="region">
-            <option value="">선택</option>
-            <option value="광주광역시 북구 용봉동">
-              광주광역시 북구 용봉동
-            </option>
-            <option value="전라북도 남원시 주천면 용담리">
-              전라북도 남원시 주천면 용담리
-            </option>
-          </select>
-        </div>
+    <div class="regionSelect">
+      <h2>지역 선택</h2>
+      <div class="input-container">
+        <select id="region">
+          <option value="">선택</option>
+          <option value="광주광역시 북구 용봉동">광주광역시 북구 용봉동</option>
+          <option value="전라북도 남원시 주천면 용담리">
+            전라북도 남원시 주천면 용담리
+          </option>
+        </select>
       </div>
     </div>
 
-    <!-- 기간 선택
-    <div class="select">
-      <div class="dateSelect">
-        <h2>기간 선택</h2>
-        <input type="text" id="dateRange" placeholder="기간을 선택하세요" />
-        <button id="saveDate" onclick="saveDate()">입력</button>
-      </div>
-    </div> -->
+    <!-- 결과 버튼 -->
+    <button id="goResultBtn">결과 확인</button>
 
-    <!-- 입력값 전송 -->
-    <div class="select">
-      <button id="goResultBtn">결과 확인</button>
-    </div>
-
-    <!-- 로딩 스피너 -->
+    <!-- 로딩 -->
     <div id="loading" style="display: none">
       <div class="spinner"></div>
       <p>결과를 불러오는 중입니다...</p>
     </div>
+  </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-content">
-        <p>© 2025 Check on Solar Power. All rights reserved.</p>
-        <p>
-          <a href="mailto:contact@example.com">문의하기</a> |
-          <a href="#">이용약관</a> |
-          <a href="#">개인정보 처리방침</a>
-        </p>
-      </div>
-    </footer>
-  </body>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>© 2025 Check on Solar Power. All rights reserved.</p>
+      <p>
+        <a href="mailto:contact@example.com">문의하기</a> |
+        <a href="#">이용약관</a> | <a href="#">개인정보 처리방침</a>
+      </p>
+    </div>
+  </footer>
+</body>
 </html>
