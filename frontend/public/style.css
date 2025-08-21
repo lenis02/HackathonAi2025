@@ -6,7 +6,8 @@
   font-family: 'Noto Sans', sans-serif;
 } */
 
-body, html {
+body,
+html {
   /* width: 100%; */
   /* height: 100%; */
 }
@@ -20,7 +21,7 @@ body, html {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
   left: 0;
@@ -30,7 +31,7 @@ body, html {
 .navbar .logo {
   font-size: 24px;
   font-weight: 700;
-  color: #C96E00;
+  color: #c96e00;
   letter-spacing: -2px;
   padding-left: 200px;
 }
@@ -38,7 +39,7 @@ body, html {
 .navbar .contact {
   font-size: 20px;
   font-weight: 300;
-  color: #FF9719;
+  color: #ff9719;
   cursor: pointer;
   letter-spacing: -2px;
   padding-right: 200px;
@@ -56,25 +57,24 @@ body, html {
 }
 
 .solar-image {
-  width: 100px;             /* 이미지 크기 조절 */
+  width: 100px; /* 이미지 크기 조절 */
   height: auto;
   padding-bottom: 100px;
   margin-right: -50px;
 }
 
 .div {
-  display: flex;             /* 가로 정렬 */
-  align-items: center;       /* 세로 중앙 맞춤 */
-  justify-content: center;   /* 화면 중앙 정렬 */
-  gap: 80px;                 /* 텍스트 사이 간격 */
-  flex-wrap: wrap;           /* 작은 화면에서 줄 바꿈 */
-  flex-direction: row;       /* 가로 방향 */
-  text-align: center;        /* 텍스트 중앙 정렬 */
+  display: flex; /* 가로 정렬 */
+  align-items: center; /* 세로 중앙 맞춤 */
+  justify-content: center; /* 화면 중앙 정렬 */
+  gap: 80px; /* 텍스트 사이 간격 */
+  flex-wrap: wrap; /* 작은 화면에서 줄 바꿈 */
+  flex-direction: row; /* 가로 방향 */
+  text-align: center; /* 텍스트 중앙 정렬 */
   margin-top: 200px;
-  margin-bottom: 200px;      /* 지역 선택 창과 간격 */
+  margin-bottom: 200px; /* 지역 선택 창과 간격 */
 
-  max-width: 100%;  /* 부모보다 커지지 않도록 */
-  
+  max-width: 100%; /* 부모보다 커지지 않도록 */
 }
 
 .check-on-solar-power {
@@ -83,7 +83,7 @@ body, html {
   color: #ffffff;
   line-height: 1.1;
   flex-shrink: 0; /* 축소 방지 */
-  
+
   text-align: center;
   margin-bottom: 100px; /* 지역 선택 창과 간격 */
   letter-spacing: -5px;
@@ -98,7 +98,6 @@ body, html {
   margin-bottom: 100px;
 
   letter-spacing: -5px;
-
 }
 
 .select {
@@ -178,7 +177,7 @@ body, html {
 .regionSelect button {
   margin-top: 12px;
   padding: 10px 16px;
-  background-color: #C96E00;
+  background-color: #c96e00;
   color: white;
   font-weight: 600;
   font-size: 14px;
@@ -188,7 +187,7 @@ body, html {
 }
 
 .regionSelect button:hover {
-  background-color: #B65B00;
+  background-color: #b65b00;
 }
 
 /* 반응형 - 화면 좁아지면 세로로 배치 */
@@ -214,7 +213,7 @@ body, html {
 }
 
 #dataRange {
-  font: 'Noto Sans';
+  font: "Noto Sans";
 }
 
 .dateSelect {
@@ -258,7 +257,7 @@ body, html {
 .dateSelect button {
   margin-top: 12px;
   padding: 10px 16px;
-  background-color: #C96E00;
+  background-color: #c96e00;
   color: white;
   font-weight: 600;
   font-size: 14px;
@@ -268,7 +267,7 @@ body, html {
 }
 
 .dateSelect button:hover {
-  background-color: #B65B00;
+  background-color: #b65b00;
 }
 
 /* Flatpickr z-index 조정 */
@@ -276,30 +275,30 @@ body, html {
   z-index: 1000;
 }
 
-/* 저장 버튼 */ 
-.saveDate button { 
-  margin-top: 12px; 
-  padding: 10px 16px; 
-  background-color: #C96E00; 
-  color: white; 
-  font-weight: 600; 
-  font-size: 14px; 
-  border: none; 
-  border-radius: 6px; 
-  cursor: pointer; 
-} 
-  
-.saveDate button:hover { 
-  background-color: #B65B00; 
+/* 저장 버튼 */
+.saveDate button {
+  margin-top: 12px;
+  padding: 10px 16px;
+  background-color: #c96e00;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.saveDate button:hover {
+  background-color: #b65b00;
 }
 
 /* 달력 팝업 전체 */
 .flatpickr-calendar {
   background-color: #ffffff; /* 카드 배경 */
   border: 1px solid #e1dccb; /* 카드 테두리 */
-  border-radius: 6px;        /* 둥근 모서리 */
+  border-radius: 6px; /* 둥근 모서리 */
   box-shadow: 0px 4px 6px #00000017; /* 그림자 */
-  font-family: 'Noto Sans', sans-serif;
+  font-family: "Noto Sans", sans-serif;
   font-size: 14px;
   color: #334155;
   width: 320px; /* 카드 너비 통일 */
@@ -314,13 +313,13 @@ body, html {
 .flatpickr-current-month {
   font-weight: 700;
   font-size: 16px;
-  color: #C96E00;
+  color: #c96e00;
 }
 
 /* 화살표 버튼 */
 .flatpickr-prev-month,
 .flatpickr-next-month {
-  color: #C96E00;
+  color: #c96e00;
 }
 
 /* 요일 */
@@ -340,29 +339,46 @@ body, html {
 
 /* 달력 전체 폰트 강제 적용 */
 .flatpickr-calendar,
-.flatpickr-calendar *, 
+.flatpickr-calendar *,
 .flatpickr-day,
 .flatpickr-weekday,
 .flatpickr-current-month,
 .flatpickr-months {
-  font-family: 'Noto Sans', sans-serif !important;  /* !important로 덮어쓰기 */
+  font-family: "Noto Sans", sans-serif !important; /* !important로 덮어쓰기 */
 }
-
 
 /* 결과 확인 버튼 */
 #forwarding {
   margin-top: 12px;
   padding: 10px 16px;
-  background-color: #C96E00;
+  background-color: #c96e00;
   color: white;
   font-weight: 600;
   font-size: 14px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-
 }
 
 #forwarding:hover {
-  background-color: #B65B00;
+  background-color: #b65b00;
+}
+
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-top: 20px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

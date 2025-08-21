@@ -43,4 +43,4 @@ def predict(request: PredictionRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(record)
 
-    return PredictionResponse(AC_POWER=ac_power)
+    return {"status": "ok"}
