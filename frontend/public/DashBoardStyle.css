@@ -1,0 +1,137 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  background: rgba(255,199,131,1);
+  font-family: "Noto Sans", sans-serif;
+}
+
+/* 전체 보드 */
+.topBoard {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+/* 중앙 배경 컨테이너 */
+.background {
+  width: 100%;
+  max-width: 1200px;
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ================== 상단 4개 박스 ================== */
+.top-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap; /* 화면 줄어들면 자동 줄바꿈 */
+}
+
+.top-row > div {
+  flex: 1;
+  min-width: 200px;
+  height: 120px;
+  padding: 16px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.left1 { background: rgba(237,238,252,1); }
+.left2 { background: rgba(230,241,253,1); }
+.left3 { background: rgba(237,238,252,1); }
+.left4 { background: rgba(230,241,253,1); }
+
+.title1, .title2, .title3, .title4 {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #111;
+}
+
+.cotent1, .content2, .content3, .content4 {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ================== 하단 그래프 ================== */
+.second-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.graph1, .graph2 {
+  background: #fbebfe;
+  padding: 24px;
+  border-radius: 16px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.graph1 {
+  flex: 3;
+}
+
+.graph2 {
+  flex: 1;
+}
+
+.title5, .title6 {
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #111;
+}
+
+.subject1, .subject2 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.detail11, .detail12, .detail21, .detail22 {
+  color: #111;
+}
+
+/* ============== 결과 요약 ============ */
+.third-title {
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #111;
+}
+
+/* ============ 다운로드 =============== */
+/* 버튼 스타일 및 오른쪽 하단 고정 */
+#downloadBtn {
+    position: fixed; /* 화면에 고정 */
+    bottom: 32px;    /* 하단에서 20px */
+    right: 40px;     /* 오른쪽에서 20px */
+    padding: 12px 20px;
+    background-color: #ab6b1d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    z-index: 1000;   /* 다른 요소 위에 표시 */
+}
+
+#downloadBtn:hover {
+    background-color: #B65B00;
+}

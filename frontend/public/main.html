@@ -4,13 +4,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
 
-    <!-- Flatpickr CSS -->
+    <!-- Flatpickr CSS/JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <link rel="stylesheet" href="style.css" />
-    <script src="js/app.js" defer></script>
     <script src="js/script.js" defer></script>
 
   </head>
@@ -74,6 +72,22 @@
         <button id="forwarding" onclick="goResult()">결과 확인</button>
     </div>
 
-</div>
+    <!-- 로딩 스피너 -->
+    <div id="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>결과를 불러오는 중입니다...</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <p>© 2025 Check on Solar Power. All rights reserved.</p>
+        <p>
+          <a href="mailto:contact@example.com">문의하기</a> | 
+          <a href="#">이용약관</a> | 
+          <a href="#">개인정보 처리방침</a>
+        </p>
+      </div>
+    </footer>
 </body>
 </html>
