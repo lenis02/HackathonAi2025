@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from ..db.database import SessionLocal
 from ..models.prediction import Prediction
+from datetime import datetime, timedelta
 
 router = APIRouter()
 
@@ -14,10 +15,27 @@ def get_db():
         db.close()
 
 @router.get("/results")
-def get_results(db: Session = Depends(get_db)):
-    # 최근 50개 결과만 불러오기 (원하면 전체 조회 가능)
-    results = db.query(Prediction).order_by(Prediction.id.desc()).limit(50).all()
-    
+def get_results(date: str = Query(None), db: Session = Depends(get_db)):
+    """
+    특정 날짜 데이터만 조회 (YYYY-MM-DD)
+    """
+    query = db.query(Prediction)
+
+    if date:
+        try:
+            # 문자열을 datetime으로 변환
+            start_date = datetime.strptime(date, "%Y-%m-%d")
+            end_date = start_date + timedelta(days=1)
+
+            query = query.filter(
+                Prediction.ts >= start_date,
+                Prediction.ts < end_date
+            )
+        except ValueError:
+            return {"error": "Invalid date format. Use YYYY-MM-DD"}
+
+    results = query.order_by(Prediction.id.desc()).limit(50).all()
+
     return [
         {
             "id": r.id,

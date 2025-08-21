@@ -1,6 +1,16 @@
+// 📅 flatpickr: 하루만 선택 가능
+flatpickr("#datePicker", {
+  dateFormat: "Y-m-d", // YYYY-MM-DD 형식
+  mode: "single",
+  defaultDate: new Date(),
+});
+
 async function loadResults() {
   try {
-    const response = await fetch("/results");
+    const date = document.getElementById("datePicker").value;
+
+    // 날짜 파라미터 추가 (백엔드 /results?date=YYYY-MM-DD)
+    const response = await fetch(`/results?date=${date}`);
     const data = await response.json();
 
     // 시간(ts)과 예측값(ac_power) 배열 추출
@@ -12,7 +22,7 @@ async function loadResults() {
     new Chart(ctx, {
       type: "line",
       data: {
-        labels: labels.reverse(), // 오래된 것부터 보이도록
+        labels: labels.reverse(),
         datasets: [
           {
             label: "예측 발전량 (AC_POWER)",
@@ -39,5 +49,3 @@ async function loadResults() {
     console.error("결과 조회 실패:", err);
   }
 }
-
-loadResults();

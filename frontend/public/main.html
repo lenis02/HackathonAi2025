@@ -36,38 +36,28 @@
       <div class="regionSelect">
         <h2>지역 선택</h2>
         <div class="input-container">
-          <label for="city">도시</label>
-          <select id="city" onchange="updateDistricts()">
+          <select id="region">
             <option value="">선택</option>
-            <option value="광주광역시">광주광역시</option>
-            <option value="서울특별시">서울특별시</option>
+            <option value="광주광역시 북구 용봉동">
+              광주광역시 북구 용봉동
+            </option>
+            <option value="전라북도 남원시 주천면 용담리">
+              전라북도 남원시 주천면 용담리
+            </option>
           </select>
-
-          <label for="district">군/구</label>
-          <select id="district" onchange="updateDongs()">
-            <option value="">선택</option>
-          </select>
-
-          <label for="dong">동</label>
-          <select id="dong" onchange="updateZipcode()">
-            <option value="">선택</option>
-          </select>
-
-          <label for="zipcode">우편번호</label>
-          <input type="text" id="zipcode" readonly placeholder="자동 입력" />
         </div>
         <button id="saveRegion" onclick="saveRegion()">입력</button>
       </div>
     </div>
 
-    <!-- 기간 선택 -->
+    <!-- 기간 선택
     <div class="select">
       <div class="dateSelect">
         <h2>기간 선택</h2>
         <input type="text" id="dateRange" placeholder="기간을 선택하세요" />
         <button id="saveDate" onclick="saveDate()">입력</button>
       </div>
-    </div>
+    </div> -->
 
     <!-- 입력값 전송 -->
     <div class="select">

@@ -1,77 +1,31 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
+    <title>예측 결과</title>
+    <link rel="stylesheet" href="/static/style.css" />
 
-    <title>DashBoard</title>
-    <link rel="stylesheet" href="DashBoardStyle.css" />
-    <script src="/static/js/script.js" defer></script>
+    <!-- flatpickr -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom JS -->
+    <script src="/static/js/result.js" defer></script>
   </head>
   <body>
-    <div class="topBoard">
-      <div class="background">
-        <div class="top-row">
-          <div class="left1">
-            <div class="title1">태양광</div>
-            <div class="cotent1">
-              <div class="c11">쩅쨍합니다</div>
-              <div class="c12">양산 쓰세용~</div>
-            </div>
-          </div>
+    <h2>예측 결과</h2>
 
-          <div class="left2">
-            <div class="title2">기온</div>
-            <div class="content2">
-              <div class="c21">열라 덥습니다</div>
-              <div class="c22">지구 고온 살균 중입니다</div>
-            </div>
-          </div>
+    <!-- 날짜 필터 -->
+    <input type="text" id="datePicker" placeholder="날짜를 선택하세요" />
+    <button onclick="loadResults()">조회</button>
 
-          <div class="left3">
-            <div class="title3">구름량</div>
-            <div class="content3">
-              <div class="c31">어쩌구저쩌구</div>
-              <div class="c32">구름 많아서 흐립니다</div>
-            </div>
-          </div>
-
-          <div class="left4">
-            <div class="title4">습도</div>
-            <div class="content4">
-              <div class="c41">습하다 습해</div>
-              <div class="c42">집에 있으세요</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="second-row">
-          <div class="graph1">
-            <div class="title5">그래프 1</div>
-            <div class="subject1">
-              <div class="detail11">asdfasdf</div>
-              <div class="detail12">asdfasdf</div>
-            </div>
-          </div>
-
-          <div class="graph2">
-            <div class="title6">그래프 2</div>
-            <div class="subject2">
-              <div class="detail21">띄우자... 그래프</div>
-              <div class="detail22">gmagagmagm</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="third-row">
-          <div class="third-title">결과 요약</div>
-          <div class="third-content">이것저것요즘저것</div>
-          <div class="third-content">어쩌구저쩌구이래서저렇고저래서이렇고</div>
-        </div>
-
-        <!-- 기존 코드 하단에 추가 -->
-        <button id="downloadBtn">대시보드 다운로드</button>
-      </div>
-    </div>
+    <!-- 그래프 -->
+    <canvas id="resultChart" width="400" height="200"></canvas>
   </body>
 </html>
