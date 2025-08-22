@@ -2,3 +2,4 @@ data/dataset/generation_train.csv
 data/dataset/~$generation_train.csv
 backend/.env
 backend/.venv/
+generation_train.csv
